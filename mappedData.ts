@@ -66,3 +66,77 @@ export const aboutData = [
     "With Becodemy by your side, there's nothing standing between you and your dream job. Our courses and community will provide you with the guidance, support, and motivation you need to unleash your full potential and become a skilled programmer.",
     "So what are you waiting for? Join the Becodemy family today and let's conquer the programming industry together! With our affordable courses, informative videos, and supportive community, the sky's the limit."
 ]
+
+
+
+export const courseContentData = [
+    {
+        id: 0,
+        title: "Intro and Demo",
+        lessons: 4,
+        duration: 30,
+        data: [
+            {
+                id: 0,
+                title: "Introduction",
+                duration: 30
+            },
+            {
+                id: 1,
+                title: "Introduction",
+                duration: 30
+            },
+            {
+                id: 2,
+                title: "Introduction",
+                duration: 30
+            },
+        ]
+    },
+    {
+        id: 1,
+        title: "Intro and Demo",
+        lessons: 4,
+        duration: 30,
+        data: [
+            {
+                id: 1,
+                title: "Introduction",
+                duration: 30
+            },
+            {
+                id: 1,
+                title: "Introduction",
+                duration: 30
+            },
+            {
+                id: 2,
+                title: "Introduction",
+                duration: 30
+            },
+        ]
+    },
+    {
+        id: 2,
+        title: "Intro and Demo",
+        lessons: 4,
+        duration: 30,
+        data: [
+            {
+                id: 2,
+                title: "Introduction",
+                duration: 30
+            },
+            {
+                id: 1,
+                title: "Introduction",
+                duration: 30
+            },
+            {
+                id: 2,
+                title: "Introduction",
+                duration: 30
+            },
+        ]
+    },
+]

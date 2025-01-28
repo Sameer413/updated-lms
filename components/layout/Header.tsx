@@ -6,11 +6,19 @@ import NavLinks from "./NavLinks";
 import ThemeSwitcher from "../ui/ThemeSwitcher";
 import Image from "next/image";
 import defaultAvatar from "../../public/assests/avatar.png";
+import { useModal } from "../ui/ModalProvider";
+import LoginModal from "../Modals/LoginModal";
 
 const Header = ({}) => {
   const [active, setActive] = useState<boolean>(false);
   const [activeIndex, setActiveIndex] = useState<number>(0);
   const imageUrl = null;
+
+  const { openModal, closeModal } = useModal();
+
+  const handleOpenModal = () => {
+    openModal(<LoginModal openModal={openModal} closeModal={closeModal} />);
+  };
 
   if (typeof window !== "undefined") {
     window.addEventListener("scroll", () => {
@@ -47,7 +55,7 @@ const Header = ({}) => {
             <div className="flex gap-3">
               <ThemeSwitcher />
 
-              <Link href={"/profile"}>
+              {/* <Link href={"/profile"}>
                 <Image
                   className="rounded-full "
                   src={imageUrl ? imageUrl : defaultAvatar}
@@ -55,7 +63,16 @@ const Header = ({}) => {
                   width={40}
                   objectFit="cover"
                 />
-              </Link>
+              </Link> */}
+              <div className="" onClick={handleOpenModal}>
+                <Image
+                  className="rounded-full "
+                  src={imageUrl ? imageUrl : defaultAvatar}
+                  alt=""
+                  width={40}
+                  objectFit="cover"
+                />
+              </div>
             </div>
           </div>
         </MaxWidthWrapper>

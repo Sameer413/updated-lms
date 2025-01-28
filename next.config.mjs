@@ -5,6 +5,9 @@ const nextConfig = {
       {
         hostname: "www.becodemy.com",
       },
+      {
+        hostname: "nzblsjrpwntfpaqvsgfh.supabase.co",
+      },
     ],
   },
 };
