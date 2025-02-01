@@ -6,6 +6,7 @@ import { ThemeProvider } from "../utils/themeProvider";
 import { Provider } from "react-redux";
 import store from "@/redux/store";
 import ModalProvider from "@/components/ui/ModalProvider";
+import { Toaster } from "react-hot-toast";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -38,6 +39,7 @@ export default function RootLayout({
           <ModalProvider>
             <ThemeProvider attribute="class" defaultTheme="dark">
               {children}
+              <Toaster position="top-center" reverseOrder={false} />
             </ThemeProvider>
           </ModalProvider>
         </Provider>

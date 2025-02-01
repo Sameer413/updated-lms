@@ -12,6 +12,8 @@ import {
 } from "@/redux/features/course/courseApi";
 import Loader from "@/components/layout/Loader";
 import toast from "react-hot-toast";
+import { useLazyGetRefreshTokenQuery } from "@/redux/features/auth/authApi";
+import { courseType } from "@/types/types";
 
 type CourseCardProps = {
   name?: string;
@@ -29,7 +31,6 @@ const CourseCard: FC<CourseCardProps> = ({
   purchased,
   ratings,
   id,
-  open,
   setOpen,
   setCourseId,
   thumbnail,
@@ -84,8 +85,15 @@ const CourseCard: FC<CourseCardProps> = ({
     </div>
   );
 };
+
 const AdminCourses = () => {
-  const { data, isLoading, refetch } = useGetAdminCoursesQuery(
+  const [refreshToken, {}] = useLazyGetRefreshTokenQuery();
+  const {
+    data,
+    isLoading,
+    refetch,
+    error: courseFetchError,
+  } = useGetAdminCoursesQuery(
     {},
     {
       refetchOnMountOrArgChange: true,
@@ -97,6 +105,13 @@ const AdminCourses = () => {
   const [open, setOpen] = useState<boolean>(false);
   const [courseId, setCouresId] = useState<string>();
 
+  const doSomething = async () => {
+    console.log("called");
+
+    await refreshToken();
+    await refetch();
+  };
+
   useEffect(() => {
     if (isSuccess) {
       refetch();
@@ -106,14 +121,18 @@ const AdminCourses = () => {
 
     if (error) {
       if ("data" in error) {
-        const errorMessage = error as any;
+        const errorMessage = error as { data: { message: string } };
         toast.error(errorMessage.data.message);
       }
     }
-  }, [isSuccess, error]);
 
-  const handleCoursedelete = (courseId: any) => {
-    deleteCourse({ id: courseId });
+    if (courseFetchError) {
+      doSomething();
+    }
+  }, [isSuccess, error, courseFetchError]);
+
+  const handleCoursedelete = (courseId: string) => {
+    deleteCourse({ courseId });
   };
 
   return isLoading ? (
@@ -130,7 +149,7 @@ const AdminCourses = () => {
             <div className="flex justify-between my-5">
               <button
                 className="hover:shadow hover:shadow-red-500 transition-colors px-3 py-2 text-lg rounded bg-red-500 font-medium"
-                onClick={() => handleCoursedelete(courseId)}
+                onClick={() => handleCoursedelete(courseId!)}
               >
                 Delete
               </button>
@@ -145,7 +164,7 @@ const AdminCourses = () => {
         </div>
       )}
 
-      {data?.courses.map((course: any) => {
+      {data?.courses?.map((course: courseType) => {
         return (
           <div key={course._id}>
             <CourseCard

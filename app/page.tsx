@@ -1,3 +1,4 @@
+"use client";
 import Header from "@/components/layout/Header";
 import { MaxWidthWrapper } from "@/components/layout/MaxWidthWrapper";
 import Image from "next/image";
@@ -8,8 +9,27 @@ import Marquee from "@/components/ui/Marquee";
 import { accordianData, marqueeItems } from "@/mappedData";
 import Accordian from "@/components/ui/Accordian";
 import Footer from "@/components/layout/Footer";
+import { useLazyGetRefreshTokenQuery } from "@/redux/features/auth/authApi";
+import { useEffect } from "react";
+import { useLoadUserQuery } from "@/redux/features/api/apiSlice";
 
 export default function Home() {
+  const [refreshToken, {}] = useLazyGetRefreshTokenQuery();
+  const { data, error, refetch } = useLoadUserQuery();
+
+  useEffect(() => {
+    const doSomething = async () => {
+      console.log("called");
+
+      await refreshToken();
+      await refetch();
+    };
+
+    if (error) {
+      doSomething();
+    }
+  }, [data, error]);
+
   return (
     <div className="h-full">
       <Header />

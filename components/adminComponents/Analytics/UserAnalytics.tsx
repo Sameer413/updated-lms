@@ -1,7 +1,7 @@
 "use client";
 import { styles } from "@/app/styles/styles";
 import { useGetUsersAnalyticsQuery } from "@/redux/features/analytics/analyticsApi";
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Area,
   AreaChart,
@@ -25,6 +25,10 @@ const UserAnalytics = ({ isDashboard }: { isDashboard?: boolean }) => {
   data?.users.last12Months.forEach((item: analyticDataType) => {
     analyticsData.push({ name: item.month, count: item.count });
   });
+
+  useEffect(() => {
+    console.log(analyticsData);
+  }, [data]);
 
   return isLoading ? (
     <Loader />
@@ -69,7 +73,20 @@ const UserAnalytics = ({ isDashboard }: { isDashboard?: boolean }) => {
               bottom: 0,
             }}
           >
-            <XAxis dataKey={"name"} />
+            <XAxis
+              dataKey={"name"}
+              domain={[0, "dataMax"]}
+              interval={0}
+              // angle={-90}
+              textAnchor="middle"
+              tickFormatter={(value) => {
+                const date = new Date(value);
+                return date.toLocaleDateString("en-US", {
+                  month: "short",
+                  year: "numeric",
+                });
+              }}
+            />
             <YAxis />
             <Tooltip />
             <Area

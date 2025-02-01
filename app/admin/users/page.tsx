@@ -4,7 +4,7 @@ import AllUsers from "@/components/adminComponents/AllUsers";
 import React from "react";
 
 const page = () => {
-  const rows: any = [];
+  // const rows: any = [];
 
   return (
     <div className="">

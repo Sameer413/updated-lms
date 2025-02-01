@@ -1,26 +1,26 @@
 import { apiSlice } from "../api/apiSlice";
 
-interface courseDataType {
-    userId: string;
-    name: string;
-    description?: string;
-    categories: string;
-    price: number;
-    estimatedPrice?: number;
-    thumbnail: {
-        path: string;
-        url: string;
-    };
-    tags: string;
-    level: string;
-    demoUrl: string;
-    benefits: { title: string }[];
-    prerequisites: { title: string }[];
-    reviews: object[];
-    courseData: string[]; // Reference to `CourseData`
-    ratings?: number;
-    purchased?: number;
-}
+// interface courseDataType {
+//     userId: string;
+//     name: string;
+//     description?: string;
+//     categories: string;
+//     price: number;
+//     estimatedPrice?: number;
+//     thumbnail?: {
+//         path: string;
+//         url: string;
+//     };
+//     tags: string;
+//     level: string;
+//     demoUrl?: string;
+//     benefits: { title: string }[];
+//     prerequisites: { title: string }[];
+//     reviews?: object[];
+//     courseData?: string[]; // Reference to `CourseData`
+//     ratings?: number;
+//     purchased?: number;
+// }
 
 export const courseApi = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
@@ -32,114 +32,48 @@ export const courseApi = apiSlice.injectEndpoints({
             })
         }),
         createCourse: builder.mutation({
-            query: ({ name,
-                description,
-                categories,
-                price,
-                estimatedPrice,
-                tags,
-                benefits,
-                prerequisites,
-                thumbnail
-            }: courseDataType) => ({
+            query: (courseData) => ({
                 url: 'create-course',
                 method: 'POST',
-                body: {
-                    name,
-                    description,
-                    categories,
-                    price,
-                    estimatedPrice,
-                    tags,
-                    benefits,
-                    prerequisites,
-                    thumbnail,
+                headers: {
+                    "Content-Type": "application/json", // ✅ Ensure correct content type
                 },
+                body: { ...courseData },
                 credentials: 'include' as const
-            })
+            }),
+            // onQueryStarted(queryArgument, { }) {
+            //     console.log(queryArgument)
+            // },
         }),
         deleteCourse: builder.mutation({
-            query: ({ name,
-                description,
-                categories,
-                price,
-                estimatedPrice,
-                tags,
-                benefits,
-                prerequisites,
-                thumbnail
-            }: courseDataType) => ({
-                url: 'create-course',
-                method: 'POST',
-                body: {
-                    name,
-                    description,
-                    categories,
-                    price,
-                    estimatedPrice,
-                    tags,
-                    benefits,
-                    prerequisites,
-                    thumbnail,
-                },
-                credentials: 'include' as const
-            })
+            query: ({ courseId }: { courseId: string }) => ({
+                url: `delete-course/${courseId}`,
+                method: 'DELETE',
+                credentials: 'include'
+            }),
         }),
         GetAdminCourses: builder.query({
-            query: ({ name,
-                description,
-                categories,
-                price,
-                estimatedPrice,
-                tags,
-                benefits,
-                prerequisites,
-                thumbnail
-            }: courseDataType) => ({
-                url: 'create-course',
-                method: 'POST',
-                body: {
-                    name,
-                    description,
-                    categories,
-                    price,
-                    estimatedPrice,
-                    tags,
-                    benefits,
-                    prerequisites,
-                    thumbnail,
-                },
+            query: () => ({
+                url: 'admin-courses',
+                method: 'GET',
                 credentials: 'include' as const
             })
         }),
         getAllCourses: builder.query({
-            query: ({ name,
-                description,
-                categories,
-                price,
-                estimatedPrice,
-                tags,
-                benefits,
-                prerequisites,
-                thumbnail
-            }: courseDataType) => ({
-                url: 'create-course',
-                method: 'POST',
-                body: {
-                    name,
-                    description,
-                    categories,
-                    price,
-                    estimatedPrice,
-                    tags,
-                    benefits,
-                    prerequisites,
-                    thumbnail,
-                },
-                credentials: 'include' as const
+            query: () => ({
+                url: 'any',
+
             })
-        })
-    }),
+        }),
+        // getCourseDetails: builder.query({
+        //     query: ({ id }: { id: string }) => ({
+        //         url: `course/${id}`,
+        //         method: 'GET',
+
+        //     })
+        // })
+    })
 });
+
 
 export const { useGetCourseByIdQuery, useCreateCourseMutation, useDeleteCourseMutation, useGetAdminCoursesQuery, useGetAllCoursesQuery } = courseApi;

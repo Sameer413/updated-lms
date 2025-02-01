@@ -7,7 +7,7 @@ import { IoCheckmarkDoneOutline } from "react-icons/io5";
 interface CoursePreviewProps {
   active: number;
   setActive: (active: number) => void;
-  courseData?: any;
+  courseData: any;
   handleCourseCreate?: any;
   isEdit: boolean;
 }
@@ -20,7 +20,7 @@ const CoursePreview: React.FC<CoursePreviewProps> = ({
   setActive,
 }) => {
   const discountPercentage =
-    ((courseData?.estimatedPrice - courseData?.price) /
+    (Number(courseData?.estimatedPrice - courseData?.price) /
       courseData?.estimatedPrice) *
     100;
 
@@ -38,18 +38,14 @@ const CoursePreview: React.FC<CoursePreviewProps> = ({
     <div className="w-[90%] m-auto py-5 mb-5">
       <div className="w-full relative">
         <div className="w-full mt-10">
-          {/* <CoursePlayer
-                        videoUrl={courseData?.demoUrl}
-                        title={courseData?.title}
-                    /> */}
-          {/* <iframe
-                        src="https://www.youtube.com/watch?v=N967-cldWWY"
-                        title="YouTube video player"
-                        // frameBorder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    // allowfullscreen
-                    ></iframe> */}
-          <Image src={courseData.thumbnail} alt="" width={400} height={400} />
+          {/* Here we will only show the image */}
+          <Image
+            src={courseData.thumbnail}
+            alt=""
+            className="w-full h-auto"
+            width={400}
+            height={400}
+          />
         </div>
         <div className="flex items-center">
           <h1 className="pt-5 text-[25px]">

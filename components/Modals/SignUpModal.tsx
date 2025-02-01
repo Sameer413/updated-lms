@@ -3,8 +3,22 @@ import { AiFillGithub } from "react-icons/ai";
 import { FcGoogle } from "react-icons/fc";
 import { Input } from "../ui/Input";
 import { Button } from "../ui/Button";
+import LoginModal from "./LoginModal";
 
-const SignUpModal = () => {
+const SignUpModal = ({
+  closeModal,
+  openModal,
+}: {
+  openModal: (content: React.ReactNode) => void;
+  closeModal: () => void;
+}) => {
+  const openSignInModal = () => {
+    closeModal();
+    if (typeof openModal === "function") {
+      openModal(<LoginModal openModal={openModal} closeModal={closeModal} />);
+    }
+  };
+
   return (
     <div className="p-5">
       <form action="" className="">
@@ -45,7 +59,7 @@ const SignUpModal = () => {
             Already have any account?{" "}
             <span
               className="text-[#2190ff] pl-1 cursor-pointer hover:underline"
-              // onClick={openSignUpModal}
+              onClick={openSignInModal}
             >
               Sign in
             </span>

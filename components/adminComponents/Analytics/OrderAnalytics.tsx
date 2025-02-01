@@ -23,9 +23,15 @@ const OrderAnalytics = ({ isDashboard }: { isDashboard?: boolean }) => {
   const { data, isLoading } = useGetOrdersAnalyticsQuery({});
 
   const analyticsData: Array<{ name: string; count: number }> = [];
+  // console.log(data.orders.last12Months[11].count);
 
   data?.orders.last12Months.forEach((item: analyticDataType) => {
-    analyticsData.push({ name: item.month, count: item.count });
+    // Convert "25 Apr 2024" to a standardized date format
+    const formattedDate = new Date(item.month);
+    analyticsData.push({
+      name: formattedDate.toISOString(), // Ensures a proper Date format
+      count: item.count,
+    });
   });
 
   return isLoading ? (
@@ -62,16 +68,28 @@ const OrderAnalytics = ({ isDashboard }: { isDashboard?: boolean }) => {
             margin={{
               top: 5,
               right: 30,
-              left: 20,
+              left: 10,
               bottom: 5,
             }}
           >
             <CartesianGrid strokeDasharray={"3 3"} />
-            <XAxis dataKey={"name"} />
+            <XAxis
+              dataKey={"name"}
+              domain={[0, "dataMax"]}
+              interval={0}
+              textAnchor="middle"
+              tickFormatter={(value) => {
+                const date = new Date(value);
+                return date.toLocaleDateString("en-US", {
+                  month: "short",
+                  year: "numeric",
+                });
+              }}
+            />
             <YAxis />
             <Tooltip />
             {!isDashboard && <Legend />}
-            <Line type={"monotone"} dataKey={"Count"} stroke="#82ca9d" />
+            <Line type={"monotone"} dataKey={"count"} stroke="#82ca9d" />
           </LineChart>
         </ResponsiveContainer>
       </div>

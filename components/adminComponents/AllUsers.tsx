@@ -1,5 +1,5 @@
 "use client";
-import { styles } from "@/app/styles/styles";
+// import { styles } from "@/app/styles/styles";
 import { useGetAllUsersQuery } from "@/redux/features/users/userApi";
 import { Box, Button } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
@@ -12,6 +12,7 @@ const AllUsers = ({ isTeam }: { isTeam?: boolean }) => {
   // const [active, setActive] = useState(false);
 
   const { data, isLoading } = useGetAllUsersQuery({});
+  console.log(data);
 
   const columns = [
     { field: "id", headerName: "ID", flex: 0.3 },
@@ -53,7 +54,7 @@ const AllUsers = ({ isTeam }: { isTeam?: boolean }) => {
     // },
   ];
 
-  const rows: any = [];
+  const rows = [];
 
   if (isTeam) {
     const newData =

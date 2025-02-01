@@ -1,4 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { loadUser } from "../auth/authSlice";
 
 // const baseQuery = fetchBaseQuery({
 //     baseUrl: process.env.NEXT_PUBLIC_SERVER_URI,
@@ -12,15 +13,23 @@ export const apiSlice = createApi({
         credentials: 'include' as const,
     }),
     endpoints: (builder) => ({
-        loadUser: builder.query({
+        loadUser: builder.query<void, void>({
             query: () => ({
-                url: 'user-me',
+                url: 'me',
                 method: 'GET',
                 credentials: "include" as const
-            })
+            }),
+            async onQueryStarted(queryArgument, { queryFulfilled, dispatch }) {
+                const { data } = await queryFulfilled;
+                dispatch(
+                    loadUser({
+                        user: data.user
+                    })
+                )
+            },
         })
     })
 });
 
 
-export const { } = apiSlice;
+export const { useLoadUserQuery } = apiSlice;

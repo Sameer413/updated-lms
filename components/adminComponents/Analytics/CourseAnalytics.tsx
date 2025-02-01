@@ -40,7 +40,20 @@ const CourseAnalytics = () => {
       <div className="w-full h-[90%] flex items-center justify-center">
         <ResponsiveContainer width="90%" height="50%">
           <BarChart width={150} height={300} data={analyticsData}>
-            <XAxis dataKey="name">
+            <XAxis
+              dataKey="name"
+              domain={[0, "dataMax"]}
+              interval={0}
+              // angle={-90}
+              textAnchor="middle"
+              tickFormatter={(value) => {
+                const date = new Date(value);
+                return date.toLocaleDateString("en-US", {
+                  month: "short",
+                  year: "numeric",
+                });
+              }}
+            >
               <Label offset={0} position="insideBottom" />
             </XAxis>
             <YAxis domain={[minValue, "auto"]} />

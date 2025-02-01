@@ -1,4 +1,5 @@
 "use client";
+import { useLazySignOutQuery } from "@/redux/features/auth/authApi";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useState } from "react";
@@ -41,6 +42,8 @@ const Item: React.FC<ItemProps> = ({ Icon, title, to, open, active }) => {
 
 const AdminSidebar = ({ active }: { active: number }) => {
   const [open, setOpen] = useState<boolean>(true);
+  const [signOutTrigger, {}] = useLazySignOutQuery();
+
   const img = false;
   return (
     <div
@@ -186,7 +189,7 @@ const AdminSidebar = ({ active }: { active: number }) => {
             to="/admin/users-analytics"
           />
         </div>
-        <div className="mt-5">
+        <div className="mt-5" onClick={signOutTrigger}>
           <div className="font-bold">{open && "Ohters"}</div>
           <Item Icon={CiLogout} title="Log Out" open={open} />
         </div>

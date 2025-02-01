@@ -8,16 +8,35 @@ import Image from "next/image";
 import defaultAvatar from "../../public/assests/avatar.png";
 import { useModal } from "../ui/ModalProvider";
 import LoginModal from "../Modals/LoginModal";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
+import { useSignOutQuery } from "@/redux/features/auth/authApi";
 
 const Header = ({}) => {
   const [active, setActive] = useState<boolean>(false);
   const [activeIndex, setActiveIndex] = useState<number>(0);
   const imageUrl = null;
-
+  const { user } = useSelector((state: RootState) => state.auth);
+  const [logout, setLogout] = useState(false);
+  const {} = useSignOutQuery(undefined, {
+    skip: !logout ? true : false,
+  });
   const { openModal, closeModal } = useModal();
 
   const handleOpenModal = () => {
     openModal(<LoginModal openModal={openModal} closeModal={closeModal} />);
+  };
+
+  const handleSignOut = () => {
+    setLogout(true);
   };
 
   if (typeof window !== "undefined") {
@@ -64,15 +83,44 @@ const Header = ({}) => {
                   objectFit="cover"
                 />
               </Link> */}
-              <div className="" onClick={handleOpenModal}>
-                <Image
-                  className="rounded-full "
-                  src={imageUrl ? imageUrl : defaultAvatar}
-                  alt=""
-                  width={40}
-                  objectFit="cover"
-                />
-              </div>
+              {!user ? (
+                <div className="" onClick={handleOpenModal}>
+                  <Image
+                    className="rounded-full "
+                    src={imageUrl ? imageUrl : defaultAvatar}
+                    alt=""
+                    width={40}
+                    objectFit="cover"
+                  />
+                </div>
+              ) : (
+                <DropdownMenu>
+                  <DropdownMenuTrigger>
+                    <Image
+                      className="rounded-full "
+                      src={imageUrl ? imageUrl : defaultAvatar}
+                      alt=""
+                      width={40}
+                      objectFit="cover"
+                    />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <Link href={"/profile"}>Profile</Link>
+                    </DropdownMenuItem>
+                    {user?.role === "admin" && (
+                      <DropdownMenuItem asChild>
+                        <Link href={"/admin"}>Dashboard</Link>
+                      </DropdownMenuItem>
+                    )}
+                    <DropdownMenuItem onClick={handleSignOut}>
+                      Sign Out
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
             </div>
           </div>
         </MaxWidthWrapper>

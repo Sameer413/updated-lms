@@ -8,22 +8,45 @@ import { useCreateCourseMutation } from "@/redux/features/course/courseApi";
 import { redirect } from "next/navigation";
 import toast from "react-hot-toast";
 import Loader from "../layout/Loader";
+import { useLazyGetRefreshTokenQuery } from "@/redux/features/auth/authApi";
+import { useUploadFile } from "@/hooks/useUpload";
+
+export interface courseStateType {
+  name: string;
+  description: string;
+  price: number;
+  estimatedPrice: number;
+  categories: string;
+  tags: string;
+  level: string;
+  thumbnail: {
+    file: File | null;
+    preview: string | null;
+  };
+  benefits?: { title: string }[];
+  prerequisites?: { title: string }[];
+}
 
 const CreateCourse = () => {
   const [createCourseHandler, { isLoading, isSuccess, error }] =
     useCreateCourseMutation();
+  const [refreshToken, {}] = useLazyGetRefreshTokenQuery();
 
+  const { uploadFile, progress, uploading } = useUploadFile();
   const [active, setActive] = useState(0);
 
-  const [courseInfo, setCourseInfo] = useState({
-    name: "",
-    description: "",
-    price: "",
-    estimatedPrice: "",
+  const [courseInformation, setCourseInformation] = useState({
+    name: "name",
+    description: "description",
+    price: 0,
+    estimatedPrice: 0,
     tags: "",
-    level: "",
+    level: "Beginner",
     categories: "",
-    thumbnail: "",
+    thumbnail: {
+      file: null,
+      preview: "",
+    },
   });
 
   const [benefits, setBenefits] = useState([{ title: "" }]);
@@ -33,7 +56,7 @@ const CreateCourse = () => {
   useEffect(() => {
     if (isSuccess) {
       toast.success("Course created successfully");
-      redirect("/admin/courses");
+      // redirect("/admin/courses");
     }
     if (error) {
       if ("data" in error) {
@@ -53,24 +76,62 @@ const CreateCourse = () => {
     }));
 
     const data = {
-      name: courseInfo.name,
-      description: courseInfo.description,
-      price: courseInfo.price,
-      estimatedPrice: courseInfo.estimatedPrice,
-      tags: courseInfo.tags,
-      thumbnail: courseInfo.thumbnail,
-      // level: courseInfo.level,
+      name: courseInformation.name,
+      description: courseInformation.description,
+      price: courseInformation.price,
+      estimatedPrice: courseInformation.estimatedPrice,
+      tags: courseInformation.tags,
+      thumbnail: courseInformation.thumbnail.preview,
+      file: courseInformation.thumbnail.file,
+      level: courseInformation.level || "Beginner",
       benefits: formattedBenefits,
-      categories: courseInfo.categories,
+      categories: courseInformation.categories,
       prerequisites: formattedPrerequisites,
     };
 
-    setCourseData({ ...data });
-    console.log(courseData);
+    setCourseData((prev) => {
+      console.log("Updated Data before sending:", data);
+      return data;
+    });
   };
 
   const handleCourseCreate = async () => {
-    await createCourseHandler(courseData);
+    await refreshToken();
+
+    const {
+      success,
+      path,
+      url,
+      error: uplerr,
+    } = await uploadFile({
+      bucket: "thumbnails",
+      file: courseData.file,
+      fileName: "temp",
+    });
+
+    if (uplerr) {
+      return console.log(uplerr);
+    }
+    if (!success) {
+      return alert("Not success");
+    }
+    // console.log(path, " ", url, " ", fileUrl);
+
+    const payload = {
+      name: courseData.name,
+      description: courseData.description,
+      benefits: courseData.benefits,
+      prerequisites: courseData.prerequisites,
+      url: url, // ✅ Ensure url is passed correctly
+      path: path, // ✅ Ensure path is passed correctly
+      categories: "fsdfdsf",
+      level: courseData.level,
+      price: courseData.price,
+      estimatedPrice: courseData.estimatedPrice,
+    };
+    console.log(payload);
+
+    await createCourseHandler(payload);
   };
 
   return isLoading ? (
@@ -82,8 +143,8 @@ const CreateCourse = () => {
           <CourseInformation
             active={active}
             setActive={setActive}
-            courseInfo={courseInfo}
-            setCourseInfo={setCourseInfo}
+            courseInfo={courseInformation}
+            setCourseInfo={setCourseInformation}
           />
         )}
         {active === 1 && (
@@ -109,6 +170,7 @@ const CreateCourse = () => {
       </div>
       <div className="w-[20%] mt-[100px] fixed z-[-1] top-16 right-0">
         <CourseOptions active={active} setActive={setActive} />
+        {/* {uploading && <div>uploading...</div>} */}
       </div>
     </div>
   );
