@@ -61,8 +61,9 @@ export const courseApi = apiSlice.injectEndpoints({
         }),
         getAllCourses: builder.query({
             query: () => ({
-                url: 'any',
-
+                url: 'courses',
+                method: 'GET',
+                credentials: "include"
             })
         }),
         // getCourseDetails: builder.query({

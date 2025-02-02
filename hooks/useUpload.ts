@@ -4,7 +4,7 @@ import { useState } from 'react';
 const supabaseUrl = 'https://nzblsjrpwntfpaqvsgfh.supabase.co'
 // const supabaseKey = process.env.SUPABASE_KEY!
 const supabase = createClient(supabaseUrl, process.env.SUPABASE_KEY || '')
-// const supabase = createClient(supabaseUrl, "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im56YmxzanJwd250ZnBhcXZzZ2ZoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzY5NjA4MjUsImV4cCI6MjA1MjUzNjgyNX0.qOXLr1Veru3HZjI7kU7feXfIwqmw8iYkqF-LISkLpJU")
+
 
 export const storage = supabase.storage;
 

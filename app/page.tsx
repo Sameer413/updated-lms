@@ -12,9 +12,14 @@ import Footer from "@/components/layout/Footer";
 import { useLazyGetRefreshTokenQuery } from "@/redux/features/auth/authApi";
 import { useEffect } from "react";
 import { useLoadUserQuery } from "@/redux/features/api/apiSlice";
+import Link from "next/link";
+import { useGetAllCoursesQuery } from "@/redux/features/course/courseApi";
+import Loader from "@/components/layout/Loader";
 
 export default function Home() {
   const [refreshToken, {}] = useLazyGetRefreshTokenQuery();
+  const { data: courseData, isLoading } = useGetAllCoursesQuery({});
+
   const { data, error, refetch } = useLoadUserQuery();
 
   useEffect(() => {
@@ -30,7 +35,9 @@ export default function Home() {
     }
   }, [data, error]);
 
-  return (
+  return isLoading ? (
+    <Loader />
+  ) : (
     <div className="h-full">
       <Header />
       <section>
@@ -47,9 +54,11 @@ export default function Home() {
               Everything you need in one course to become a beginner to expert
               level mobile app developer.
             </div>
-            <Button size={"lg"} className="rounded-full text-white">
-              Expolre Now
-            </Button>
+            <Link href={"/courses"}>
+              <Button size={"lg"} className="rounded-full text-white">
+                Expolre Now
+              </Button>
+            </Link>
           </div>
 
           <div className="flex-1">
@@ -74,9 +83,18 @@ export default function Home() {
             </div>
           </div>
           <div className="grid grid-cols-3 gap-6 my-20 px-5">
-            <CourseCard />
-            <CourseCard />
-            <CourseCard />
+            {courseData?.courses?.map(
+              ({ _id, name, price, estimatedPrice, ratings, thumbnail }) => (
+                <CourseCard
+                  key={_id}
+                  estimatedPrice={estimatedPrice}
+                  price={price}
+                  title={name}
+                  rating={ratings}
+                  thumbnail={thumbnail.url}
+                />
+              )
+            )}
           </div>
         </MaxWidthWrapper>
       </section>
