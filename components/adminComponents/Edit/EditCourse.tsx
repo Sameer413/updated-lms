@@ -3,7 +3,7 @@ import { styles } from "@/app/styles/styles";
 import Ratings from "@/components/ui/Ratings";
 import { useGetCourseByIdQuery } from "@/redux/features/course/courseApi";
 import Image from "next/image";
-import React, { FC, useState } from "react";
+import React, { FC } from "react";
 import { IoCheckmarkDoneOutline } from "react-icons/io5";
 import Loader from "@/components/layout/Loader";
 import Link from "next/link";
@@ -13,13 +13,13 @@ type EditCourseProps = {
 };
 
 const EditCourse: FC<EditCourseProps> = ({ id }) => {
-  const [price, setPrice] = useState();
+  // const [price, setPrice] = useState();
   const { data, isLoading } = useGetCourseByIdQuery(
     { courseId: id },
     { refetchOnMountOrArgChange: true }
   );
 
-  console.log(typeof data.course.price);
+  // console.log(typeof data.course.price);
 
   const percentageOff = (estimatedPrice: number, currentPrice: number) => {
     return Math.floor(((estimatedPrice - currentPrice) / estimatedPrice) * 100);
@@ -101,27 +101,31 @@ const EditCourse: FC<EditCourseProps> = ({ id }) => {
             What you will learn from this course?
           </h1>
         </div>
-        {data.course?.benefits?.map((item: any, index: number) => (
-          <div key={index} className="w-full flex 800px:items-center py-2">
-            <div className="w-[15px] mr-1">
-              <IoCheckmarkDoneOutline size={20} />
+        {data.course?.benefits?.map(
+          ({ title }: { title: string }, index: number) => (
+            <div key={index} className="w-full flex 800px:items-center py-2">
+              <div className="w-[15px] mr-1">
+                <IoCheckmarkDoneOutline size={20} />
+              </div>
+              <p className="pl-2">{title}</p>
             </div>
-            <p className="pl-2">{item.title}</p>
-          </div>
-        ))}
+          )
+        )}
         <br />
         <br />
         <h1 className="text-[25px] font-Poppins font-[600]">
           What are the prerequisites for starting this course?
         </h1>
-        {data?.course?.prerequisites?.map((item: any, index: number) => (
-          <div className="w-full flex 800px:items-center py-2" key={index}>
-            <div className="w-[15px] mr-1">
-              <IoCheckmarkDoneOutline size={20} />
+        {data?.course?.prerequisites?.map(
+          ({ title }: { title: string }, index: number) => (
+            <div className="w-full flex 800px:items-center py-2" key={index}>
+              <div className="w-[15px] mr-1">
+                <IoCheckmarkDoneOutline size={20} />
+              </div>
+              <p className="pl-2">{title}</p>
             </div>
-            <p className="pl-2">{item.title}</p>
-          </div>
-        ))}
+          )
+        )}
         <br />
         <br />
         {/* course description */}
@@ -144,18 +148,18 @@ const EditCourse: FC<EditCourseProps> = ({ id }) => {
         >
           Add Lecture Sections
         </Link>
-        <Link
+        {/* <Link
           href={`/admin/edit-course/information/${id}`}
           className="w-[180px] flex items-center justify-center h-[40px] bg-[#37a39a] text-center text-[#fff] rounded mt-8 cursor-pointer"
         >
           Update Information
-        </Link>
+        </Link> */}
         {/* <div
-                        className="w-[180px] flex items-center justify-center h-[40px] bg-[#37a39a] text-center text-[#fff] rounded mt-8 cursor-pointer"
-                        onClick={() => { }}
-                    >
-                        Update Course
-                    </div> */}
+          className="w-[180px] flex items-center justify-center h-[40px] bg-[#37a39a] text-center text-[#fff] rounded mt-8 cursor-pointer"
+          onClick={() => {}}
+        >
+          Update Course
+        </div> */}
       </div>
     </div>
   );

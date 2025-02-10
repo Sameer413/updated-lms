@@ -1,6 +1,5 @@
-import Image from "next/image";
 import React from "react";
-import tempThumbnail from "../../public/assests/thumbnail.webp";
+import Image from "next/image";
 import Link from "next/link";
 import { IoListSharp } from "react-icons/io5";
 import Ratings from "./Ratings";
@@ -11,9 +10,11 @@ type Props = {
   price: number;
   estimatedPrice: number;
   thumbnail: string;
+  id: string;
 };
 
 const CourseCard: React.FC<Props> = ({
+  id,
   estimatedPrice,
   price,
   rating,
@@ -21,15 +22,14 @@ const CourseCard: React.FC<Props> = ({
   title,
 }) => {
   return (
-    <Link href={"/"}>
+    <Link href={`/course/${id}`}>
       <div className="bg-slate-500 p-2 backdrop-blur bg-opacity-20 rounded-lg">
         <Image
           src={thumbnail}
-          alt=""
+          alt="Course Thumbnail"
           width={400}
           height={400}
-          objectFit="contain"
-          className="w-full h-auto rounded-md"
+          className="w-full h-auto rounded-md object-contain"
         />
         <div className="my-3 px-1">
           <div className="capitalize text-lg font-normal font-Poppins">

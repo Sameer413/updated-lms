@@ -19,10 +19,12 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { useSignOutQuery } from "@/redux/features/auth/authApi";
+import { HiOutlineMenuAlt3 } from "react-icons/hi";
 
 const Header = ({}) => {
   const [active, setActive] = useState<boolean>(false);
   const [activeIndex, setActiveIndex] = useState<number>(0);
+  const [show, setShow] = useState<boolean>(false);
   const imageUrl = null;
   const { user } = useSelector((state: RootState) => state.auth);
   const [logout, setLogout] = useState(false);
@@ -50,9 +52,9 @@ const Header = ({}) => {
   }
 
   return (
-    <div className="w-full h-20 z-50 border-b relative dark:border-[rgba(255,255,255,0.11)] shadow-xl transition duration-500">
+    <div className="w-full h-16 lg:h-20 z-50 border-b relative dark:border-[rgba(255,255,255,0.11)] shadow-xl transition duration-500">
       <div
-        className={`border-b h-[80px] w-full ${
+        className={`border-b h-16 lg:h-20 w-full ${
           active
             ? "bg-white dark:bg-opacity-50 dark:bg-gradient-to-b dark:from-gray-900 dark:to-black fixed top-0 left-0 dark:border-[rgba(255,255,255,0.11)] shadow-xl transition duration-150"
             : "dark:border-[#ffffff1c] dark:shadow"
@@ -64,29 +66,19 @@ const Header = ({}) => {
           </Link>
 
           <div className="flex items-center gap-6">
-            <div className="">
+            <div className="hidden lg:block">
               <NavLinks
                 activeIndex={activeIndex}
                 setActiveIndex={setActiveIndex}
               />
             </div>
 
-            <div className="flex gap-3">
+            <div className="flex lg:gap-3">
               <ThemeSwitcher />
-
-              {/* <Link href={"/profile"}>
-                <Image
-                  className="rounded-full "
-                  src={imageUrl ? imageUrl : defaultAvatar}
-                  alt=""
-                  width={40}
-                  objectFit="cover"
-                />
-              </Link> */}
               {!user ? (
                 <div className="" onClick={handleOpenModal}>
                   <Image
-                    className="rounded-full "
+                    className="rounded-full w-8 lg:w-10"
                     src={imageUrl ? imageUrl : defaultAvatar}
                     alt=""
                     width={40}
@@ -97,7 +89,7 @@ const Header = ({}) => {
                 <DropdownMenu>
                   <DropdownMenuTrigger>
                     <Image
-                      className="rounded-full "
+                      className="rounded-full w-8 lg:w-10 "
                       src={imageUrl ? imageUrl : defaultAvatar}
                       alt=""
                       width={40}
@@ -120,6 +112,21 @@ const Header = ({}) => {
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
+              )}
+
+              <button
+                onClick={() => setShow(!show)}
+                className="lg:hidden md:hidden ml-3"
+              >
+                <HiOutlineMenuAlt3 className="text-3xl" />
+              </button>
+
+              {show && (
+                <NavLinks
+                  isMobile
+                  activeIndex={activeIndex}
+                  setActiveIndex={setActiveIndex}
+                />
               )}
             </div>
           </div>

@@ -1,27 +1,32 @@
 import Image from "next/image";
-import React from "react";
-import thumbnail from "../../public/assests/thumbnail.webp";
+import React, { useEffect } from "react";
 import { Button } from "../ui/Button";
 import {
   useCreateOrderMutation,
   useCreatePaymentIntentMutation,
 } from "@/redux/features/orders/orderApi";
-import { useGetRefreshTokenQuery } from "@/redux/features/auth/authApi";
+import { useLazyGetRefreshTokenQuery } from "@/redux/features/auth/authApi";
+import { useLoadUserQuery } from "@/redux/features/api/apiSlice";
+import Link from "next/link";
 
-const CourseImageSection = ({ data }) => {
+const CourseImageSection = ({ data, userCourses }) => {
   const {
     _id,
     price,
     thumbnail: { url },
     estimatedPrice,
+    name,
   } = data;
 
-  const [createPayment, { data: paymentData, error }] =
+  const [createPayment, { data: paymentData, error: payErr }] =
     useCreatePaymentIntentMutation();
-  const [createOrder, { data: orderData }] = useCreateOrderMutation();
-  // const { data: refreshData } = useGetRefreshTokenQuery(null);
+  const [createOrder, {}] = useCreateOrderMutation();
+  const [refreshToken, {}] = useLazyGetRefreshTokenQuery();
+  const {} = useLoadUserQuery();
 
-  // console.log(refreshData);
+  useEffect(() => {
+    refreshToken();
+  }, []);
 
   const initializeRazorpay = () => {
     return new Promise((resolve) => {
@@ -43,32 +48,36 @@ const CourseImageSection = ({ data }) => {
       alert("Razorpay SDK Failed to load");
       return;
     }
-    console.log("amount: " + amount);
 
     await createPayment({
       amount: amount,
       courseId: _id,
     });
 
-    console.log(paymentData);
-    console.log(error);
+    if (payErr) {
+      await refreshToken();
+
+      await createPayment({
+        amount: amount,
+        courseId: _id,
+      });
+    }
 
     const options = {
       key: process.env.RAZOR_PAY_KEY,
       name: "Sameer Nimje",
-      currency: paymentData.order.currency,
+      currency: paymentData?.order.currency,
       amount: paymentData?.order.amount,
       order_id: paymentData?.order.id,
       description: "Thank you",
       prefill: {
-        name: "Manu Arora",
-        email: "manuarorawork@gmail.com",
-        contact: "9999999999",
+        name: "Sameer Nimje",
+        email: "sameernimje844@gmail.com",
+        contact: "8208643722",
       },
       handler: async function (response: any) {
         try {
           // Extract the payment ID from the response
-          console.log(response);
 
           const paymentId = response.razorpay_payment_id;
           if (!paymentId) {
@@ -78,13 +87,11 @@ const CourseImageSection = ({ data }) => {
 
           console.log("Payment ID:", paymentId);
 
-          // Check if the payment was successful before proceeding
-          if (response.razorpay_payment_status === "success") {
-            // Create the order with courseId and paymentId
+          if (true) {
             await createOrder({
-              orderId: paymentData.newOrder._id, // Ensure `paymentData.newOrder._id` is valid
-              status: "captured", // Adjust as needed (use 'captured' if payment was successful)
-              paymentId,
+              orderId: paymentData.newOrder._id,
+              status: "captured",
+              paymentId: paymentId,
             });
 
             console.log("Order created successfully!");
@@ -111,24 +118,42 @@ const CourseImageSection = ({ data }) => {
         height={500}
         className="w-full border-white border"
       />
-      <div className="flex items-center gap-2">
-        <div className="font-Poppins text-lg font-medium">₹{price}</div>
-        <div className="font-Poppins text-sm font-medium -mt-3 line-through dark:text-white/75">
-          ₹{estimatedPrice}
-        </div>
-        <div className="font-Poppins text-lg font-medium">69% Off</div>
-      </div>
-      <div className="">
-        <Button
-          size={"lg"}
-          onClick={() => makePayment(price)}
-          className="rounded-full text-base bg-red-600 hover:bg-red-600/90 text-white"
-        >
-          Buy Now ₹99.99
-        </Button>
+      <div className="text-2xl font-Poppins font-semibold lg:hidden md:hidden">
+        {name}
       </div>
 
-      <div className="">
+      <div className="flex lg:flex-col md:flex-col justify-between items-center lg:items-start md:items-start">
+        <div className="flex items-center gap-2">
+          <div className="font-Poppins text-lg font-medium">₹{price}</div>
+          <div className="font-Poppins text-sm font-medium -mt-3 line-through dark:text-white/75">
+            ₹{estimatedPrice}
+          </div>
+          <div className="font-Poppins text-lg font-medium">69% Off</div>
+        </div>
+        <div className="lg:mt-4">
+          {userCourses?.some((obj) => obj.courseId === _id) ? (
+            <Link href={`/course/${_id}/lecture`}>
+              <Button
+                size={"lg"}
+                onClick={() => makePayment(price)}
+                className="rounded-full text-base bg-red-600 hover:bg-red-600/90 text-white"
+              >
+                Watch Now
+              </Button>
+            </Link>
+          ) : (
+            <Button
+              size={"lg"}
+              onClick={() => makePayment(price)}
+              className="rounded-full text-base bg-red-600 hover:bg-red-600/90 text-white"
+            >
+              Buy Now ₹99.99
+            </Button>
+          )}
+        </div>
+      </div>
+
+      <div className="hidden md:block lg:block">
         <li className="">Source code inlcuded</li>
         <li className="">Source code inlcuded</li>
         <li className="">Source code inlcuded</li>

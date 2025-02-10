@@ -2,21 +2,43 @@
 import CourseContentList from "@/components/courseComponents/CourseContentList";
 import Header from "@/components/layout/Header";
 import { MaxWidthWrapper } from "@/components/layout/MaxWidthWrapper";
+import { useGetCourseByIdQuery } from "@/redux/features/course/courseApi";
+import {
+  useGetAllCourseDataQuery,
+  useLazyRetrieveCourseDataQuery,
+} from "@/redux/features/courseData/courseDataApi";
 import { cn } from "@/utils/utils";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
-const Page = () => {
+const Page = ({ params }: { params: { id: string } }) => {
   const [active, setActive] = useState<number>(0);
+  const [content, setContent] = useState<string>();
+  const [link, setLink] = useState(null);
+  const { data } = useGetCourseByIdQuery(
+    { courseId: params.id },
+    { refetchOnMountOrArgChange: true }
+  );
+  const [retrieveData, {}] = useLazyRetrieveCourseDataQuery();
+
+  useEffect(() => {
+    const resp = async () => {
+      const { data: courseData } = await retrieveData({ id: content });
+
+      setLink(courseData?.data?.courseData?.videoUrl); // Updates state asynchronously
+    };
+
+    if (content) resp();
+  }, [content]);
 
   return (
     <div className="">
       <Header />
       <MaxWidthWrapper className="my-4">
-        <div className="grid grid-cols-[2fr_1fr] gap-3">
+        <div className="grid lg:grid-cols-[2fr_1fr] gap-3 h-screen">
           <div className="">
             <div className="">
               <iframe
-                src=""
+                src={link || ""}
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 title="Vedio Player"
                 className="aspect-video w-full border"
@@ -25,7 +47,7 @@ const Page = () => {
 
             <div className="mt-4">
               <div className="text-2xl font-Poppins font-semibold">
-                Build Your Mobile App Development Career With React Native
+                {data?.course?.name}
               </div>
 
               <div className="mt-4 flex p-4 justify-between dark:bg-slate-50 dark:bg-opacity-20 bg-slate-900 bg-opacity-10 rounded-md">
@@ -49,11 +71,7 @@ const Page = () => {
 
               {active === 0 && (
                 <p className="text-base whitespace-pre-line mt-4 font-Poppins ">
-                  Lorem ipsum dolor sit, amet consectetur adipisicing elit.
-                  Dignissimos, sapiente impedit voluptatum autem suscipit
-                  aliquid perspiciatis eligendi, a commodi officiis earum
-                  deserunt sint. Incidunt assumenda temporibus, libero quisquam
-                  id necessitatibus hic iste dicta eum?
+                  {data?.course.description}
                 </p>
               )}
 
@@ -76,9 +94,13 @@ const Page = () => {
               )}
             </div>
           </div>
-          <div className="">
+          <div className="h-full">
             <div className="font-Poppins text-2xl font-semibold">Playlist</div>
-            <CourseContentList />
+            <CourseContentList
+              courseId={params.id}
+              setContent={setContent}
+              activeContent={content}
+            />
           </div>
         </div>
       </MaxWidthWrapper>

@@ -17,8 +17,10 @@ const navLinks: NavLinkType[] = [
 const NavLinks = ({
   activeIndex,
   setActiveIndex,
+  isMobile,
 }: {
   activeIndex: number;
+  isMobile?: boolean;
   setActiveIndex: (idx: number) => void;
 }) => {
   const memoizedLinks = useMemo(() => {
@@ -36,7 +38,13 @@ const NavLinks = ({
     ));
   }, [activeIndex, setActiveIndex]);
 
-  return <div className="flex lg:gap-6">{memoizedLinks}</div>;
+  return isMobile ? (
+    <div className="absolute right-0 top-16 shadow-xl bg-opacity-90 overflow-x-hidden h-screen w-2/3 bg-black flex-col flex p-6 gap-6">
+      {memoizedLinks}
+    </div>
+  ) : (
+    <div className="flex lg:gap-6">{memoizedLinks}</div>
+  );
 };
 
 export default NavLinks;

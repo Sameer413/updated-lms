@@ -14,14 +14,16 @@ interface OptimizedAccordionProps<T> {
   //   HeaderComponent: FC<T>;
   HeaderComponent: FC<T & { isActive: boolean; toggle: () => void }>;
   BodyComponent: FC<T>;
+  open?: boolean;
 }
 
 const OptimizedAccordion = <T extends Record<string, unknown>>({
   items,
   HeaderComponent,
   BodyComponent,
+  open,
 }: OptimizedAccordionProps<T>) => {
-  const [active, setActive] = useState<number | null>(null);
+  const [active, setActive] = useState<number | null>(open ? 0 : null);
 
   const handleOpen = (idx: number) => {
     setActive(idx === active ? null : idx);
@@ -32,19 +34,19 @@ const OptimizedAccordion = <T extends Record<string, unknown>>({
       {items.map((item, idx) => (
         <div
           key={idx}
-          onClick={() => handleOpen(idx)}
           className={cn(
             "py-2 my-2",
             idx === items.length - 1 ? "border-none" : "border-b"
           )}
         >
-          {/* Custom Header Component */}
-          <HeaderComponent
-            {...item}
-            isActive={active === idx}
-            toggle={() => handleOpen(idx)}
-          />
-
+          <div onClick={() => handleOpen(idx)}>
+            {/* Custom Header Component */}
+            <HeaderComponent
+              {...item}
+              isActive={active === idx}
+              toggle={() => handleOpen(idx)}
+            />
+          </div>
           {/* Custom Body Component */}
           {active === idx && (
             <div className="mt-3">

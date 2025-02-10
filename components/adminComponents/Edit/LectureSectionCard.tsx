@@ -1,68 +1,59 @@
-'use client'
-import { useDeleteCourseDataMutation } from '@/redux/features/course/courseApi'
-import React, { FC, useState } from 'react'
-import { FaPlus } from 'react-icons/fa'
-import { MdDeleteOutline } from 'react-icons/md'
+"use client";
+import { useDeleteCourseDataMutation } from "@/redux/features/courseData/courseDataApi";
+// import { useDeleteCourseDataMutation } from "@/redux/features/course/courseApi";
+import React, { FC, useState } from "react";
+import { FaPlus } from "react-icons/fa";
+import { MdDeleteOutline } from "react-icons/md";
 
 interface LectureSectionCardProps {
-    deleteCourseData: any;
-    id: string;
-    courseDataId?: string
+  id: string;
+  courseDataId?: string;
+  sectionTitle: string;
+  data: any;
 }
 
 const LectureSectionCard: FC<LectureSectionCardProps> = ({
-    deleteCourseData, id, courseDataId
+  sectionTitle,
+  data,
 }) => {
+  const [open, setOpen] = useState(false);
+  const [deleteData, {}] = useDeleteCourseDataMutation();
 
-    const [open, setOpen] = useState(false);
+  return (
+    <div className="border w-[80%] p-4 rounded-md mb-4 ">
+      <div
+        className="w-full text-xl font-Poppins font-medium flex justify-between items-center"
+        onClick={() => setOpen(!open)}
+      >
+        <div className="text-xl cursor-pointer w-full mr-2">{sectionTitle}</div>
+        <button className="" onClick={() => {}}>
+          <MdDeleteOutline size={25} />
+        </button>
+      </div>
 
-    return (
-        <div
-            className="border w-[80%] p-4 rounded-md mb-4 "
-
-        >
-            <div
-                className="w-full mb-2 text-xl font-Poppins font-medium flex justify-between items-center"
-                onClick={() => setOpen(!open)}
-            >
-                <div className="text-xl cursor-pointer w-full mr-2">
-                    Introduction
-                </div>
+      {open && (
+        <>
+          {data.map((item, idx) => (
+            <div key={idx} className="">
+              <div className="flex justify-between items-center mt-3 px-2">
+                <div className="text-lg">{item.title}</div>
                 <button
-                    className=""
-                    onClick={() => deleteCourseData({ id, courseDataId })}
+                  onClick={() => deleteData({ courseDataId: item._id })}
+                  className="hover:text-red-500 transition-colors duration-150"
                 >
-                    <MdDeleteOutline size={25} />
+                  <MdDeleteOutline size={25} />
                 </button>
+              </div>
             </div>
+          ))}
 
-            {open && (
-                <div className="border-t ">
-                    <div className="flex justify-between items-center mt-3 px-2">
+          <div className="mt-5 gap-2 w-[180px] flex items-center justify-center h-[40px] bg-[#37a39a] text-center text-[#fff] rounded cursor-pointer">
+            Add Lecture <FaPlus />
+          </div>
+        </>
+      )}
+    </div>
+  );
+};
 
-                        <div className="text-lg">
-                            Introduction React Fundamental
-                        </div>
-                        <button className="">
-                            <MdDeleteOutline size={25} />
-                        </button>
-
-                    </div>
-                    {/* <div className="">
-                        v1
-                    </div>
-                    <div className="">
-                        v1
-                    </div> */}
-
-                    <div className="mt-5 gap-2 w-[180px] flex items-center justify-center h-[40px] bg-[#37a39a] text-center text-[#fff] rounded cursor-pointer">
-                        Add Lecture <FaPlus />
-                    </div>
-
-                </div>
-            )}
-        </div>
-    )
-}
-
-export default LectureSectionCard
+export default LectureSectionCard;

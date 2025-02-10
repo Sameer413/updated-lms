@@ -6,7 +6,7 @@ import React, {
   createContext,
   useContext,
 } from "react";
-import { motion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 
 interface ModalContextProps {
   openModal: (content: ReactNode) => void;
@@ -42,19 +42,25 @@ const ModalProvider: FC<ModalProviderProps> = ({ children }) => {
 
   return (
     <ModalContext.Provider value={{ openModal, closeModal }}>
-      {modalContent && (
-        <div className="fixed top-0 z-50 bg-black bg-opacity-50 h-full w-full flex items-center justify-center">
-          <motion.div
-            initial={{ y: "100vh", opacity: 0 }} // Start from bottom
-            animate={{ y: 0, opacity: 1 }} // Move to the center
-            exit={{ y: "100vh", opacity: 0 }} // Exit to bottom
-            transition={{ duration: 0.5, ease: "easeOut" }}
-            className="bg-white dark:bg-slate-900 rounded-[8px] shadow p-4 outline-none lg:w-1/3"
+      <AnimatePresence>
+        {modalContent && (
+          <div
+            className="fixed top-0 z-50 bg-black bg-opacity-50 h-full w-full flex items-center justify-center"
+            onClick={closeModal}
           >
-            {modalContent}
-          </motion.div>
-        </div>
-      )}
+            <motion.div
+              initial={{ y: "100vh", opacity: 0 }} // Start from bottom
+              animate={{ y: 0, opacity: 1 }} // Move to the center
+              exit={{ y: "100vh", opacity: 0 }} // Exit to bottom
+              transition={{ duration: 0.5, ease: "easeOut" }}
+              className="bg-white dark:bg-slate-900 rounded-[8px] shadow p-4 outline-none lg:w-1/3"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {modalContent}
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
       {children}
     </ModalContext.Provider>
   );

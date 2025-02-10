@@ -7,10 +7,10 @@ const Footer = () => {
   return (
     <div className="border-t dark:border-[rgba(255,255,255,0.11)] shadow py-5">
       <MaxWidthWrapper>
-        <div className="grid grid-cols-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
           {footerData.map(({ title, links }) => {
             return (
-              <div key={title} className="">
+              <div key={title} className="mt-4 lg:mt-0">
                 <div className="mb-2 font-medium font-Poppins select-none">
                   {title}
                 </div>

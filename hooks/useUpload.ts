@@ -3,7 +3,8 @@ import { useState } from 'react';
 
 const supabaseUrl = 'https://nzblsjrpwntfpaqvsgfh.supabase.co'
 // const supabaseKey = process.env.SUPABASE_KEY!
-const supabase = createClient(supabaseUrl, process.env.SUPABASE_KEY || '')
+// const supabase = createClient(supabaseUrl, process.env.SUPABASE_KEY || '')
+const supabase = createClient(supabaseUrl, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im56YmxzanJwd250ZnBhcXZzZ2ZoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzY5NjA4MjUsImV4cCI6MjA1MjUzNjgyNX0.qOXLr1Veru3HZjI7kU7feXfIwqmw8iYkqF-LISkLpJU')
 
 
 export const storage = supabase.storage;
@@ -33,13 +34,30 @@ export const useUploadFile = () => {
 
         try {
             const fileSize = file.size;
-            // const CHUNK_SIZE = 512 * 1024; // 512 KB chunks
+            const CHUNK_SIZE = 512 * 1024; // 512 KB chunks
             let uploadedBytes = 0;
 
+            // ✅ Create a reader to read file in chunks
             const reader = file.stream().getReader();
+            let uploadedData = new Uint8Array(0);
 
-            const uploadResponse = await supabase.storage.from(bucket).upload(fileName, file, {
-                // contentType: mimeType,
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+
+                // Append new chunk
+                const newData = new Uint8Array(uploadedData.length + value.length);
+                newData.set(uploadedData);
+                newData.set(value, uploadedData.length);
+                uploadedData = newData;
+
+                uploadedBytes += value.length;
+                setProgress(Math.round((uploadedBytes / fileSize) * 100));
+            }
+
+            // ✅ Upload the final buffer as a binary file
+            const uploadResponse = await supabase.storage.from(bucket).upload(fileName, uploadedData, {
+                contentType: file.type, // Preserve file type
             });
 
             if (uploadResponse.error) {
@@ -47,15 +65,9 @@ export const useUploadFile = () => {
                 return { success: false, error: uploadResponse.error.message };
             }
 
+            // ✅ Get Public URL
             const { data: urlData } = await supabase.storage.from(bucket).getPublicUrl(uploadResponse.data.path);
             setFileUrl(urlData.publicUrl);
-
-            while (true) {
-                const { done, value } = await reader.read();
-                if (done) break;
-                uploadedBytes += value.length;
-                setProgress(Math.round((uploadedBytes / fileSize) * 100));
-            }
 
             return { success: true, url: urlData.publicUrl, path: uploadResponse.data.path };
         } catch (err: unknown) {

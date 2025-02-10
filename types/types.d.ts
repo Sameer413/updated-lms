@@ -23,3 +23,19 @@ interface courseType extends Document {
     purchased?: number;
 }
 
+export interface ICourseData extends Document {
+    _id: string;
+    courseId: object;
+    title: string;
+    description: string | null;
+    videoThumbnail: {
+        path: string;
+        url: string;
+    };
+    videoUrl?: string;
+    videoSection: string | null;
+    videoLength: number;
+    links?: ILink[];
+    // suggestion: string;
+    // questions?: Types.DocumentArray<IComment>;
+}

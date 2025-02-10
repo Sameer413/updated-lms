@@ -9,7 +9,7 @@ const Page = () => {
     <>
       <Header />
       <MaxWidthWrapper>
-        <div className="text-5xl text-center font-medium tracking-wide mb-2 font-Poppins py-10">
+        <div className="text-4xl lg:text-5xl text-center font-medium tracking-wide mb-2 font-Poppins py-10">
           What is{" "}
           <span className="bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent font-medium">
             ELearning?
@@ -18,7 +18,10 @@ const Page = () => {
 
         {aboutData.map((item: string, idx: number) => {
           return (
-            <div key={idx} className="mb-5 text-xl font-Josefin font-medium">
+            <div
+              key={idx}
+              className="mb-5 lg:text-xl font-Josefin font-medium text-center lg:text-start"
+            >
               {item}
             </div>
           );
